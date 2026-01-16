@@ -13,7 +13,7 @@
     },
     "ynab-production": {
       "type": "http",
-      "url": "https://your-domain.vercel.app/api/mcp"
+      "url": "https://ynab-mcp.vercel.app/api/mcp"
     },
     "better-auth": {
       "type": "http",

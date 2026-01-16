@@ -14,6 +14,18 @@ const STATE_TOKEN_BYTES = 32;
 /** Milliseconds per minute */
 const MS_PER_MINUTE = 60 * 1000;
 
+/** Data stored alongside OAuth state */
+interface OAuthStateData {
+  state: string;
+  returnUrl?: string;
+}
+
+/** Result from validating OAuth state */
+export interface OAuthStateValidationResult {
+  valid: boolean;
+  returnUrl?: string;
+}
+
 /**
  * Generates a cryptographically secure random state string
  */
@@ -31,49 +43,61 @@ export function generateOAuthState(): string {
 export async function storeOAuthState(
   userId: string,
   state: string,
+  returnUrl?: string,
 ): Promise<void> {
   const expiresAt = new Date(Date.now() + STATE_EXPIRY_MINUTES * MS_PER_MINUTE);
+
+  const stateData: OAuthStateData = { state, returnUrl };
 
   await db.insert(verification).values({
     id: crypto.randomUUID(),
     identifier: `${STATE_IDENTIFIER_PREFIX}:${userId}`,
-    value: state,
+    value: JSON.stringify(stateData),
     expiresAt,
   });
 }
 
 /**
  * Validates and consumes an OAuth state
- * Returns true if the state is valid, false otherwise
+ * Returns validation result with optional return URL
  */
 export async function validateOAuthState(
   userId: string,
   state: string,
-): Promise<boolean> {
+): Promise<OAuthStateValidationResult> {
   const now = new Date();
   const identifier = `${STATE_IDENTIFIER_PREFIX}:${userId}`;
 
-  // Find and delete the matching state (consuming it)
-  const result = await db
+  // Find all non-expired states for this user
+  const results = await db
     .select()
     .from(verification)
     .where(
       and(
         eq(verification.identifier, identifier),
-        eq(verification.value, state),
         gt(verification.expiresAt, now),
       ),
-    )
-    .limit(1);
+    );
 
-  if (result.length === 0) {
-    return false;
+  // Find matching state
+  for (const result of results) {
+    try {
+      const stateData: OAuthStateData = JSON.parse(result.value);
+      if (stateData.state === state) {
+        // Delete the state to prevent replay attacks
+        await db.delete(verification).where(eq(verification.id, result.id));
+        return { valid: true, returnUrl: stateData.returnUrl };
+      }
+    } catch {
+      // Legacy format: plain state string
+      if (result.value === state) {
+        await db.delete(verification).where(eq(verification.id, result.id));
+        return { valid: true };
+      }
+    }
   }
 
-  // Delete the state to prevent replay attacks
-  await db.delete(verification).where(eq(verification.id, result[0].id));
-
-  return true;
+  return { valid: false };
 }
 
 /**

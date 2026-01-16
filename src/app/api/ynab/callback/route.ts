@@ -8,7 +8,7 @@ import { validateOAuthState } from "@/lib/ynab/state";
 import { saveYnabTokens } from "@/lib/ynab/tokens";
 
 /** Allowed redirect paths after OAuth completion */
-const ALLOWED_REDIRECT_PATHS = ["/ynab/connected", "/error", "/login"];
+const ALLOWED_REDIRECT_PATHS = ["/ynab/connected", "/error", "/login", "/consent"];
 
 /** Schema for OAuth callback query parameters */
 const callbackParamsSchema = z.object({
@@ -87,8 +87,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate the OAuth state to prevent CSRF attacks
-  const isValidState = await validateOAuthState(session.user.id, state);
-  if (!isValidState) {
+  const stateResult = await validateOAuthState(session.user.id, state);
+  if (!stateResult.valid) {
     return safeRedirect(request, "/error", {
       message: "Invalid or expired OAuth state",
     });
@@ -101,7 +101,19 @@ export async function GET(request: NextRequest) {
     // Save the tokens to the database
     await saveYnabTokens(session.user.id, tokenResponse);
 
-    // Redirect to success page
+    // Redirect to return URL if provided, otherwise to success page
+    if (stateResult.returnUrl) {
+      // Parse the return URL to validate it's a relative path
+      try {
+        const returnUrl = new URL(stateResult.returnUrl, request.url);
+        // Ensure it's the same origin
+        if (returnUrl.origin === new URL(request.url).origin) {
+          return NextResponse.redirect(returnUrl);
+        }
+      } catch {
+        // Invalid URL, fall through to default
+      }
+    }
     return safeRedirect(request, "/ynab/connected");
   } catch (err) {
     logError("YNAB OAuth error:", err);

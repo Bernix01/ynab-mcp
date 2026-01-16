@@ -18,9 +18,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Generate and store OAuth state for CSRF protection
+  // Get optional return URL from query params
+  const returnUrl = request.nextUrl.searchParams.get("return_url") || undefined;
+
+  // Generate and store OAuth state for CSRF protection (with return URL)
   const state = generateOAuthState();
-  await storeOAuthState(session.user.id, state);
+  await storeOAuthState(session.user.id, state, returnUrl);
 
   // Redirect to YNAB authorization
   const authUrl = getYnabAuthUrl(state);
