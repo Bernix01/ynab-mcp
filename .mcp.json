@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "next-devtools-mcp@latest"
+      ]
+    },
+    "ynab-local": {
+      "type": "http",
+      "url": "http://localhost:3000/api/mcp"
+    },
+    "ynab-production": {
+      "type": "http",
+      "url": "https://your-domain.vercel.app/api/mcp"
+    },
+    "better-auth": {
+      "type": "http",
+      "url": "https://mcp.chonkie.ai/better-auth/better-auth-builder/mcp"
+    }
+  }
+}
