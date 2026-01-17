@@ -17,12 +17,19 @@ const IV_LENGTH = 12;
 /** PBKDF2 iteration count for key derivation */
 const PBKDF2_ITERATIONS = 100000;
 
-/** Default salt for key derivation (used if ENCRYPTION_SALT not set) */
+/** Default salt for key derivation (used only in development if ENCRYPTION_SALT not set) */
 const DEFAULT_KEY_DERIVATION_SALT = "ynab-mcp-token-encryption";
 
+// Fail fast: Require ENCRYPTION_SALT in production for secure token encryption
+if (env.isProduction && !env.ENCRYPTION_SALT) {
+  throw new Error(
+    "ENCRYPTION_SALT environment variable must be set in production. " +
+    "Generate a secure value with: openssl rand -hex 32"
+  );
+}
+
 /**
- * Get the encryption salt from environment or use default
- * For production, ENCRYPTION_SALT should be a unique 32-byte hex string
+ * Get the encryption salt from environment or use default (development only)
  */
 function getEncryptionSalt(): string {
   return env.ENCRYPTION_SALT || DEFAULT_KEY_DERIVATION_SALT;

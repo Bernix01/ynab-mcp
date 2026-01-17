@@ -9,10 +9,31 @@ import { deleteYnabTokens } from "@/lib/ynab/tokens";
  * Revokes the user's YNAB connection by deleting their stored tokens.
  * Requires authentication.
  */
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const headersList = await headers();
+
+    // CSRF protection: Verify origin matches host if origin is present
+    const origin = headersList.get("origin");
+    const host = headersList.get("host");
+    if (origin && host && !origin.includes(host)) {
+      return NextResponse.json(
+        { error: "Forbidden", message: "Invalid origin" },
+        { status: 403 },
+      );
+    }
+
+    // CSRF protection: Require JSON content type to prevent form-based attacks
+    const contentType = request.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      return NextResponse.json(
+        { error: "Bad Request", message: "Content-Type must be application/json" },
+        { status: 400 },
+      );
+    }
+
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: headersList,
     });
 
     if (!session?.user?.id) {
