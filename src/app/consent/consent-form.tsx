@@ -13,6 +13,7 @@ interface ClientInfo {
 function ConsentFormInner() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [fetchingClient, setFetchingClient] = useState(true);
   const [error, setError] = useState("");
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
   const [redirectUriValid, setRedirectUriValid] = useState<boolean | null>(
@@ -33,6 +34,7 @@ function ConsentFormInner() {
   useEffect(() => {
     // Fetch client info and validate redirect_uri
     if (clientId && redirectUri) {
+      setFetchingClient(true);
       fetch(
         `/api/auth/oauth/client-info?client_id=${encodeURIComponent(clientId)}`,
       )
@@ -47,7 +49,12 @@ function ConsentFormInner() {
           const isValid = registeredUris.some((uri) => {
             // Exact match required for security
             if (uri === redirectUri) return true;
-            // For localhost development, allow different ports (MCP clients use dynamic ports)
+            // Allow localhost with different ports for MCP clients (e.g., Claude Desktop).
+            // MCP clients run locally and use dynamic ports for OAuth callbacks, even when
+            // connecting to a production server. This is the expected flow:
+            //   Claude Desktop (localhost:PORT) → Production Server → redirect back to localhost:PORT
+            // Security: This only applies if the CLIENT registered a localhost URI, so
+            // arbitrary attackers cannot redirect to their own localhost servers.
             try {
               const registered = new URL(uri);
               const requested = new URL(redirectUri);
@@ -72,7 +79,12 @@ function ConsentFormInner() {
           setClientInfo({ name: clientId });
           setRedirectUriValid(false);
           setError("Unknown client");
+        })
+        .finally(() => {
+          setFetchingClient(false);
         });
+    } else {
+      setFetchingClient(false);
     }
   }, [clientId, redirectUri]);
 
@@ -165,6 +177,42 @@ function ConsentFormInner() {
     );
   }
 
+  // Show loading state while fetching client info
+  if (fetchingClient) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+        <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
+          <div className="flex flex-col items-center gap-4">
+            <svg
+              aria-hidden="true"
+              className="w-8 h-8 text-blue-600 animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Loading application details...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
@@ -205,6 +253,7 @@ function ConsentFormInner() {
                   className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400"
                 >
                   <svg
+                    aria-hidden="true"
                     className="w-5 h-5 text-green-500 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"

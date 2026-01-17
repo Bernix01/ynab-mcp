@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function ErrorBoundary({
   error,
@@ -10,6 +10,8 @@ export default function ErrorBoundary({
   error: globalThis.Error & { digest?: string };
   reset: () => void;
 }) {
+  const [showHelp, setShowHelp] = useState(false);
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error("Application error:", error);
@@ -17,9 +19,10 @@ export default function ErrorBoundary({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg text-center">
+      <main id="main-content" className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg text-center">
         <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
           <svg
+            aria-hidden="true"
             className="w-8 h-8 text-red-600 dark:text-red-400"
             fill="none"
             stroke="currentColor"
@@ -63,7 +66,42 @@ export default function ErrorBoundary({
             Go to Home
           </Link>
         </div>
-      </div>
+
+        <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
+          <button
+            type="button"
+            onClick={() => setShowHelp(!showHelp)}
+            className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 flex items-center justify-center gap-1 mx-auto"
+          >
+            <svg
+              aria-hidden="true"
+              className={`w-4 h-4 transition-transform ${showHelp ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            {showHelp ? "Hide troubleshooting tips" : "Need help?"}
+          </button>
+
+          {showHelp && (
+            <div className="mt-4 text-left space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="font-medium text-zinc-900 dark:text-zinc-200">Common solutions:</p>
+              <ul className="space-y-2 list-disc list-inside">
+                <li>Refresh the page and try again</li>
+                <li>Clear your browser cookies and cache</li>
+                <li>Check your internet connection</li>
+                <li>Try signing out and back in</li>
+                <li>If connecting YNAB, ensure your YNAB account is active</li>
+              </ul>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 pt-2">
+                If the problem persists, please try again later or contact support with the Error ID above.
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
