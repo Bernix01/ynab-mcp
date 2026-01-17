@@ -138,7 +138,7 @@ export function registerCategoryTools(server: McpServer) {
       budget_id: z.string().describe("The budget ID"),
       month: z.string().describe("The budget month (YYYY-MM-01)"),
       category_id: z.string().describe("The category ID"),
-      budgeted: z.number().describe("The new budgeted amount"),
+      budgeted: z.number().describe("The new budgeted amount in currency units (e.g., 100.50 for $100.50)"),
     },
     async (args, extra) => {
       const auth = await getAuthenticatedClient(extra);
