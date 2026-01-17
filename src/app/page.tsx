@@ -24,12 +24,48 @@ export default async function Home() {
             YNAB MCP Server
           </h1>
           <p className="max-w-lg text-lg leading-7 text-zinc-600 dark:text-zinc-400">
-            A Model Context Protocol server that provides Claude with secure
-            access to your YNAB budget data.
+            Let Claude manage your YNAB budget — create transactions, check balances, and more through natural conversation.
           </p>
         </div>
 
         <div className="flex flex-col items-center gap-6 w-full max-w-md">
+          {/* Example Use Case Section */}
+          <div className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+            <h2 className="text-xl font-semibold mb-3 text-black dark:text-zinc-50">
+              Example Use Case
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+              YNAB&apos;s auto-sync isn&apos;t available everywhere. Send Claude a bank statement
+              (PDF, CSV, or screenshot) and have it add missing transactions, match existing ones,
+              and keep your budget accurate — no manual entry needed.
+            </p>
+          </div>
+
+          {/* Data Privacy Section */}
+          <div className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+            <h2 className="text-xl font-semibold mb-3 text-black dark:text-zinc-50">
+              Your Data
+            </h2>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium text-black dark:text-zinc-200 mb-1">We store:</p>
+                <ul className="text-zinc-600 dark:text-zinc-400 space-y-1 ml-4 list-disc">
+                  <li>Your email &amp; password hash (for login)</li>
+                  <li>YNAB tokens, encrypted (for API access)</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-medium text-black dark:text-zinc-200 mb-1">We don&apos;t store:</p>
+                <ul className="text-zinc-600 dark:text-zinc-400 space-y-1 ml-4 list-disc">
+                  <li>Your bank statements (go directly to Claude)</li>
+                  <li>Your budget data (proxied, not cached)</li>
+                  <li>Your transactions (pass through only)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Features Section */}
           <div className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
             <h2 className="text-xl font-semibold mb-4 text-black dark:text-zinc-50">
               Features
@@ -149,7 +185,15 @@ export default async function Home() {
         </div>
 
         <p className="text-sm text-zinc-500 dark:text-zinc-500">
-          Connect your YNAB account to let Claude help manage your budget.
+          Open source on{" "}
+          <a
+            href="https://github.com/Bernix01/ynab-mcp"
+            className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
         </p>
       </main>
     </div>

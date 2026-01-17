@@ -2,6 +2,29 @@
 
 A Model Context Protocol (MCP) server that provides Claude with secure access to YNAB (You Need A Budget) API.
 
+## Why This Exists
+
+This MCP server lets Claude manage your YNAB budget data directly — create transactions, check balances, update categories, and more through natural conversation.
+
+**Example use case:** YNAB's automatic bank sync isn't available in all regions. With this server, you can send Claude your bank statement (PDF, CSV, or screenshot) and have it add missing transactions, match existing ones, and keep your budget accurate. No more manual entry.
+
+## Data Privacy
+
+**What we store:**
+- **Your email and password hash** — for authentication to this MCP server
+- **YNAB OAuth tokens (encrypted)** — so Claude can access your YNAB data on your behalf. These are encrypted with AES-256-GCM before storage
+
+**What we DON'T store:**
+- **Your bank statements** — these are sent directly to Claude and never touch our servers
+- **Your YNAB budget data** — we only proxy requests to YNAB's API; nothing is cached or stored
+- **Your transactions** — all transaction data flows through to YNAB and is not retained
+
+**How it works:**
+1. You authenticate with this server (creates a session)
+2. You connect your YNAB account (we store encrypted tokens)
+3. When Claude needs YNAB data, it calls our MCP tools which proxy to YNAB's API
+4. Your bank statements go directly to Claude's context — we never see them
+
 ## Architecture
 
 ```mermaid
