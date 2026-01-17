@@ -58,8 +58,12 @@ sequenceDiagram
     C->>BA: GET /.well-known/oauth-authorization-server
     BA-->>C: OAuth Metadata (endpoints, PKCE support)
 
-    C->>BA: POST /oauth2/register (Dynamic Client Registration)
-    BA-->>C: client_id
+    alt Dynamic Registration
+        C->>BA: POST /oauth2/register (Dynamic Client Registration)
+        BA-->>C: client_id
+    else Well-known Client
+        Note over C: Use client_id "ynab"
+    end
 
     C->>C: Generate PKCE (code_verifier + code_challenge)
     C->>U: Open Browser to /oauth2/authorize
@@ -228,7 +232,45 @@ Remember to update:
 
 ## MCP Configuration
 
-Add the server to your Claude configuration:
+### Claude Desktop
+
+Add the server to your Claude Desktop configuration (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "ynab": {
+      "type": "http",
+      "url": "https://ynab-mcp.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+The server provides a well-known OAuth client (`client_id: "ynab"`) that supports:
+- Localhost callbacks with any port (for MCP's dynamic port allocation)
+- Public client authentication (PKCE, no client_secret required)
+
+On first connection, Claude Desktop will open a browser for you to sign in and authorize access.
+
+### Claude Code (CLI)
+
+For Claude Code, add to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "ynab": {
+      "type": "http",
+      "url": "https://ynab-mcp.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+### Manual OAuth Configuration (Advanced)
+
+If your MCP client requires explicit OAuth configuration:
 
 ```json
 {
@@ -240,6 +282,7 @@ Add the server to your Claude configuration:
       },
       "auth": {
         "type": "oauth2",
+        "client_id": "ynab",
         "discoveryUrl": "https://your-domain.vercel.app/.well-known/oauth-authorization-server"
       }
     }
