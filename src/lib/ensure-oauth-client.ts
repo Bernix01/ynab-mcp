@@ -13,8 +13,15 @@ const WELL_KNOWN_CLIENT = {
   id: "ynab-mcp-client",
   clientId: "ynab",
   name: "YNAB MCP Client",
-  // Allow localhost with any port for MCP clients (Claude Desktop uses dynamic ports)
-  redirectUris: ["http://localhost", "http://127.0.0.1"],
+  // Redirect URIs for various MCP clients:
+  // - Claude.ai and Claude.com web clients
+  // - Localhost with any port for Claude Desktop (uses dynamic ports)
+  redirectUris: [
+    "https://claude.ai/api/mcp/auth_callback",
+    "https://claude.com/api/mcp/auth_callback",
+    "http://localhost",
+    "http://127.0.0.1",
+  ],
   // Public client - no secret required (PKCE is used instead)
   public: true,
   tokenEndpointAuthMethod: "none",
@@ -27,13 +34,33 @@ export async function ensureOAuthClient(): Promise<void> {
   try {
     // Check if client already exists
     const existing = await db
-      .select({ id: oauthClient.id })
+      .select({ id: oauthClient.id, redirectUris: oauthClient.redirectUris })
       .from(oauthClient)
       .where(eq(oauthClient.clientId, WELL_KNOWN_CLIENT.clientId))
       .limit(1);
 
     if (existing.length > 0) {
-      logInfo("[OAuth] Well-known client 'ynab' already exists");
+      // Update existing client to ensure redirect URIs are current
+      const currentUris = existing[0].redirectUris || [];
+      const expectedUris = WELL_KNOWN_CLIENT.redirectUris;
+
+      // Check if URIs need updating
+      const needsUpdate =
+        currentUris.length !== expectedUris.length ||
+        !expectedUris.every(uri => currentUris.includes(uri));
+
+      if (needsUpdate) {
+        await db
+          .update(oauthClient)
+          .set({
+            redirectUris: WELL_KNOWN_CLIENT.redirectUris,
+            updatedAt: new Date(),
+          })
+          .where(eq(oauthClient.clientId, WELL_KNOWN_CLIENT.clientId));
+        logInfo("[OAuth] Updated well-known client 'ynab' redirect URIs");
+      } else {
+        logInfo("[OAuth] Well-known client 'ynab' already up to date");
+      }
       return;
     }
 
