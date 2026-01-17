@@ -44,19 +44,24 @@ const verifyToken = async (
   _req: Request,
   bearerToken?: string,
 ): Promise<AuthInfo | undefined> => {
-  logInfo("[MCP] verifyToken called", { hasToken: !!bearerToken, tokenPrefix: bearerToken?.slice(0, 20) });
+  // Only log detailed JWT info in development to avoid leaking sensitive data
+  if (!env.isProduction) {
+    logInfo("[MCP] verifyToken called", { hasToken: !!bearerToken, tokenPrefix: bearerToken?.slice(0, 20) });
+  }
 
   if (!bearerToken) return undefined;
 
   try {
-    // First decode JWT to inspect claims (for debugging)
+    // First decode JWT to inspect claims (for debugging in development only)
     const decoded = decodeJwt(bearerToken);
-    logInfo("[MCP] JWT decoded claims", {
-      iss: decoded.iss,
-      aud: decoded.aud,
-      sub: decoded.sub,
-      exp: decoded.exp,
-    });
+    if (!env.isProduction) {
+      logInfo("[MCP] JWT decoded claims", {
+        iss: decoded.iss,
+        aud: decoded.aud,
+        sub: decoded.sub,
+        exp: decoded.exp,
+      });
+    }
 
     // Verify JWT using JWKS
     // Note: BetterAuth OAuth provider may use different issuer format
@@ -73,11 +78,13 @@ const verifyToken = async (
       audience: [env.BETTER_AUTH_URL, `${env.BETTER_AUTH_URL}/`],
     });
 
-    logInfo("[MCP] JWT verified", {
-      sub: payload.sub,
-      clientId: payload.clientId,
-      scope: payload.scope
-    });
+    if (!env.isProduction) {
+      logInfo("[MCP] JWT verified", {
+        sub: payload.sub,
+        clientId: payload.clientId,
+        scope: payload.scope
+      });
+    }
 
     // Extract scopes from JWT payload
     const scopes = typeof payload.scope === "string"
