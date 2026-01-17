@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -261,6 +262,16 @@ function LoginForm() {
               placeholder="••••••••"
             />
             {isSignUp && <PasswordStrengthMeter password={password} />}
+            {!isSignUp && (
+              <div className="mt-1 text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            )}
           </div>
 
           <button
