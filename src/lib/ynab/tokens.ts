@@ -43,9 +43,18 @@ export async function getYnabTokens(
 
   const token = result[0];
 
-  // Decrypt the tokens
-  const accessToken = await decryptToken(token.accessToken);
-  const refreshToken = await decryptToken(token.refreshToken);
+  // Decrypt the tokens - if decryption fails, the tokens were encrypted with
+  // a different key (e.g., salt changed) and we need to re-authorize
+  let accessToken: string;
+  let refreshToken: string;
+  try {
+    accessToken = await decryptToken(token.accessToken);
+    refreshToken = await decryptToken(token.refreshToken);
+  } catch (error) {
+    logError("[YNAB] Failed to decrypt tokens (key/salt may have changed), removing invalid tokens:", error);
+    await db.delete(ynabToken).where(eq(ynabToken.userId, userId));
+    return null;
+  }
 
   // Check if token is expired or will expire soon
   const refreshThreshold = new Date(
