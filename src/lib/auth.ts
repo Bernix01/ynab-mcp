@@ -25,6 +25,47 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // Password requirements (must match client-side validation)
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+    // Custom password validation for strength requirements
+    password: {
+      // Validate password before hashing - throws error if requirements not met
+      async hash(password) {
+        // Validate password strength requirements
+        const errors: string[] = [];
+        if (password.length < 8) {
+          errors.push("at least 8 characters");
+        }
+        if (!/[A-Z]/.test(password)) {
+          errors.push("one uppercase letter");
+        }
+        if (!/[0-9]/.test(password)) {
+          errors.push("one number");
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          errors.push("one special character (!@#$%^&*)");
+        }
+        if (errors.length > 0) {
+          throw new Error(`Password must contain ${errors.join(", ")}`);
+        }
+        // Use default scrypt hashing via Node.js crypto
+        const { scrypt, randomBytes } = await import("node:crypto");
+        const { promisify } = await import("node:util");
+        const scryptAsync = promisify(scrypt);
+        const salt = randomBytes(16).toString("hex");
+        const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
+        return `${salt}:${derivedKey.toString("hex")}`;
+      },
+      async verify({ hash, password }) {
+        const { scrypt, timingSafeEqual } = await import("node:crypto");
+        const { promisify } = await import("node:util");
+        const scryptAsync = promisify(scrypt);
+        const [salt, key] = hash.split(":");
+        const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
+        return timingSafeEqual(Buffer.from(key, "hex"), derivedKey);
+      },
+    },
   },
   // Session configuration
   session: {
