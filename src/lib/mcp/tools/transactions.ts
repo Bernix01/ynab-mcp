@@ -125,17 +125,12 @@ export function registerTransactionTools(server: McpServer) {
         .describe(
           "Transaction amount in currency units (e.g., 9.33 for $9.33). Positive for inflow, negative for outflow.",
         ),
-      payee_name: z.string().optional().describe("Payee name"),
-      category_id: z.string().optional().describe("Category ID"),
-      memo: z.string().optional().describe("Transaction memo"),
+      payee_name: z.string().describe("Payee name"),
+      category_id: z.string().describe("Category ID"),
+      memo: z.string().describe("Transaction memo"),
       cleared: z
         .enum(["cleared", "uncleared", "reconciled"])
-        .optional()
         .describe("Cleared status"),
-      approved: z
-        .boolean()
-        .optional()
-        .describe("Whether the transaction is approved"),
     },
     async (args, extra) => {
       const auth = await getAuthenticatedClient(extra);
@@ -153,7 +148,7 @@ export function registerTransactionTools(server: McpServer) {
               category_id: args.category_id,
               memo: args.memo,
               cleared: args.cleared,
-              approved: args.approved,
+              approved: false,
             },
           },
         );
