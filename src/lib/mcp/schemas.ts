@@ -115,6 +115,11 @@ export const transactionParams = {
   transaction_id: transactionIdSchema,
 } as const;
 
+export const payeeParams = {
+  budget_id: budgetIdSchema,
+  payee_id: payeeIdSchema,
+} as const;
+
 export const monthParams = {
   budget_id: budgetIdSchema,
   month: monthSchema,
