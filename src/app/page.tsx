@@ -1,8 +1,10 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { getYnabTokens } from "@/lib/ynab/tokens";
 import { DisconnectYnabButton } from "./disconnect-ynab-button";
+import { SetupGuide } from "./setup-guide";
 import { SignOutButton } from "./sign-out-button";
 
 export default async function Home() {
@@ -103,6 +105,12 @@ export default async function Home() {
               </li>
             </ul>
           </div>
+
+          <SetupGuide
+            serverUrl={env.BETTER_AUTH_URL}
+            isLoggedIn={isLoggedIn}
+            isYnabConnected={isYnabConnected}
+          />
 
           {isLoggedIn ? (
             <div className="w-full space-y-4">

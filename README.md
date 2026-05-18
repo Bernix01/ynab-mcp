@@ -175,6 +175,58 @@ stateDiagram-v2
 - Encrypted token storage (AES-256-GCM)
 - Deployed on Vercel with Neon Postgres
 
+## Getting Started
+
+You can either use the public hosted instance or run your own.
+
+- **Hosted instance** (easiest): `https://ynab-mcp.vercel.app` — skip ahead to [Connecting Claude](#connecting-claude).
+- **Self-host** (full control over your data): follow [Prerequisites](#prerequisites) and [Quick Start](#quick-start), then come back here.
+
+### Connecting Claude
+
+The wire-up has three accounts/steps, in order:
+
+#### 1. Create an account on the MCP server
+
+Visit `https://ynab-mcp.vercel.app` (or your self-hosted URL) and click **Create Account**.
+
+This account is what Claude authenticates against — it is **separate from your YNAB login** and is only used to identify you to this server. Your email and a password hash are stored; nothing else about you is retained.
+
+#### 2. Add the server to your Claude client
+
+Pick the section that matches your client and follow the snippet:
+
+- [Claude Desktop](#claude-desktop)
+- [Claude Code (CLI)](#claude-code-cli)
+- [Manual OAuth Configuration](#manual-oauth-configuration-advanced) (other MCP-compatible clients)
+
+On first connection, Claude will open a browser so you can sign in to the MCP server (the account from step 1). After approving the OAuth consent screen, the client receives a token and the connection is live.
+
+#### 3. Authorize YNAB on first tool call
+
+The MCP server still needs permission to talk to YNAB on your behalf. You have two options:
+
+- **Recommended:** Sign in at `https://ynab-mcp.vercel.app` (same account as step 1) and click **Connect YNAB Account**. You'll be redirected to YNAB, approve access, and you're done.
+- **Or:** Ask Claude to do anything YNAB-related (e.g. *"list my YNAB budgets"*). The first call returns a one-time authorization URL — open it, approve on YNAB, and retry the request.
+
+YNAB tokens are encrypted (AES-256-GCM) before being stored and are automatically refreshed when they expire (every 2 hours).
+
+You can check the connection at any time by asking Claude: *"Check my YNAB connection status."* (uses the `ynab_connection_status` tool).
+
+### Example Prompts
+
+Once connected, try:
+
+- *"List my YNAB budgets."*
+- *"What's my checking account balance right now?"*
+- *"Show me this month's transactions over $50 in the 'Groceries' category."*
+- *"Add a $42.18 transaction at Costco from my credit card, category Groceries, dated yesterday."*
+- *"Here's my latest bank statement (PDF attached). Find any transactions missing from YNAB and add them, and flag any that look like duplicates."*
+- *"How much do I have left to spend on Dining Out this month?"*
+- *"Increase my Emergency Fund category budget by $200 this month."*
+
+The bank-statement workflow is the headline use case: drop the file into Claude, and it reconciles against YNAB without you typing each line.
+
 ## Prerequisites
 
 - Node.js 18+
