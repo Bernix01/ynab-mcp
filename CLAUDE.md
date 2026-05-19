@@ -227,10 +227,17 @@ TOKEN_ENCRYPTION_KEY=
 - `ynab_update_transaction` - Update existing transaction
 - `ynab_delete_transaction` - Delete a transaction
 
+### Scheduled (Planned) Transactions
+- `ynab_list_scheduled_transactions` - List all scheduled (planned) transactions
+- `ynab_get_scheduled_transaction` - Get details for a scheduled transaction
+
 ### Category Management
 - `ynab_list_categories` - List all categories
 - `ynab_get_category` - Get category details
 - `ynab_get_category_balance` - Get category balance and activity
+
+### Targets (Category Goals)
+- `ynab_list_targets` - List all category targets/goals with progress and funding status (optional `only_under_funded` filter)
 
 ### Month Management
 - `ynab_get_month` - Get budget month details

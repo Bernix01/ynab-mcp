@@ -9,6 +9,8 @@ import { registerCategoryTools } from "@/lib/mcp/tools/categories";
 import { registerMonthTools } from "@/lib/mcp/tools/months";
 import { registerStatusTools } from "@/lib/mcp/tools/status";
 import { registerPayeeTools } from "@/lib/mcp/tools/payees";
+import { registerScheduledTransactionTools } from "@/lib/mcp/tools/scheduled-transactions";
+import { registerTargetTools } from "@/lib/mcp/tools/targets";
 import { registerTransactionTools } from "@/lib/mcp/tools/transactions";
 
 // Create JWKS client for JWT verification (cached)
@@ -24,7 +26,9 @@ const handler = createMcpHandler(
     registerBudgetTools(server);
     registerAccountTools(server);
     registerTransactionTools(server);
+    registerScheduledTransactionTools(server);
     registerCategoryTools(server);
+    registerTargetTools(server);
     registerPayeeTools(server);
     registerMonthTools(server);
   },
