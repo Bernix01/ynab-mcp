@@ -27,7 +27,10 @@ export async function POST(request: Request) {
     const contentType = request.headers.get("content-type");
     if (!contentType?.includes("application/json")) {
       return NextResponse.json(
-        { error: "Bad Request", message: "Content-Type must be application/json" },
+        {
+          error: "Bad Request",
+          message: "Content-Type must be application/json",
+        },
         { status: 400 },
       );
     }

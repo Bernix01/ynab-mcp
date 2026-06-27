@@ -8,7 +8,12 @@ import { validateOAuthState } from "@/lib/ynab/state";
 import { saveYnabTokens } from "@/lib/ynab/tokens";
 
 /** Allowed redirect paths after OAuth completion */
-const ALLOWED_REDIRECT_PATHS = ["/ynab/connected", "/error", "/login", "/consent"];
+const ALLOWED_REDIRECT_PATHS = [
+  "/ynab/connected",
+  "/error",
+  "/login",
+  "/consent",
+];
 
 /** Schema for OAuth callback query parameters */
 const callbackParamsSchema = z.object({

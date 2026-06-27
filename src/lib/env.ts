@@ -56,7 +56,9 @@ const buildEnvSchema = z.object({
   BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
   YNAB_CLIENT_ID: z.string().default(""),
   YNAB_CLIENT_SECRET: z.string().default(""),
-  YNAB_REDIRECT_URI: z.string().default("http://localhost:3000/api/ynab/callback"),
+  YNAB_REDIRECT_URI: z
+    .string()
+    .default("http://localhost:3000/api/ynab/callback"),
   TOKEN_ENCRYPTION_KEY: z.string().optional(),
   ENCRYPTION_SALT: z.string().optional(),
   NODE_ENV: z

@@ -386,6 +386,13 @@ If your MCP client requires explicit OAuth configuration:
 - `ynab_update_transaction` - Update existing transaction
 - `ynab_delete_transaction` - Delete a transaction
 
+### Scheduled Transaction Management
+- `ynab_list_scheduled_transactions` - List scheduled (recurring/upcoming) transactions
+- `ynab_get_scheduled_transaction` - Get scheduled transaction details
+- `ynab_create_scheduled_transaction` - Create a new scheduled transaction
+- `ynab_update_scheduled_transaction` - Update existing scheduled transaction
+- `ynab_delete_scheduled_transaction` - Delete a scheduled transaction
+
 ### Category Management
 - `ynab_list_categories` - List all categories
 - `ynab_get_category` - Get category details

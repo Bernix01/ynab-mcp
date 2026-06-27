@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -135,14 +136,23 @@ function ConsentFormInner() {
         window.location.href = data.uri;
       } else if (redirectUri && clientId) {
         // Fallback: redirect back to authorize endpoint
-        const authorizeUrl = new URL("/api/auth/oauth2/authorize", window.location.origin);
+        const authorizeUrl = new URL(
+          "/api/auth/oauth2/authorize",
+          window.location.origin,
+        );
         authorizeUrl.searchParams.set("client_id", clientId);
         authorizeUrl.searchParams.set("redirect_uri", redirectUri);
         if (scope) authorizeUrl.searchParams.set("scope", scope);
         if (state) authorizeUrl.searchParams.set("state", state);
-        if (responseType) authorizeUrl.searchParams.set("response_type", responseType);
-        if (codeChallenge) authorizeUrl.searchParams.set("code_challenge", codeChallenge);
-        if (codeChallengeMethod) authorizeUrl.searchParams.set("code_challenge_method", codeChallengeMethod);
+        if (responseType)
+          authorizeUrl.searchParams.set("response_type", responseType);
+        if (codeChallenge)
+          authorizeUrl.searchParams.set("code_challenge", codeChallenge);
+        if (codeChallengeMethod)
+          authorizeUrl.searchParams.set(
+            "code_challenge_method",
+            codeChallengeMethod,
+          );
         window.location.href = authorizeUrl.toString();
       } else {
         throw new Error("No redirect URL returned from consent endpoint");
@@ -218,9 +228,12 @@ function ConsentFormInner() {
       <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
         <div className="text-center">
           {clientInfo?.icon && (
-            <img
+            <Image
               src={clientInfo.icon}
               alt={clientInfo.name}
+              width={64}
+              height={64}
+              unoptimized
               className="w-16 h-16 mx-auto mb-4 rounded-lg"
             />
           )}

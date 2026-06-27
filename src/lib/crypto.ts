@@ -24,7 +24,7 @@ const DEFAULT_KEY_DERIVATION_SALT = "ynab-mcp-token-encryption";
 if (env.isProduction && !env.ENCRYPTION_SALT) {
   throw new Error(
     "ENCRYPTION_SALT environment variable must be set in production. " +
-    "Generate a secure value with: openssl rand -hex 32"
+      "Generate a secure value with: openssl rand -hex 32",
   );
 }
 

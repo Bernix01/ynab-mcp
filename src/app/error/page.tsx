@@ -18,7 +18,10 @@ function ErrorContent() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            role="img"
+            aria-label="Error"
           >
+            <title>Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

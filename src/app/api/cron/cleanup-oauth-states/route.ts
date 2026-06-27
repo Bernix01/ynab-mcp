@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { logError, logInfo } from "@/lib/logger";
 import { cleanupExpiredStates } from "@/lib/ynab/state";
-import { logInfo, logError } from "@/lib/logger";
 
 /**
  * GET /api/cron/cleanup-oauth-states
@@ -16,10 +16,7 @@ export async function GET(request: Request) {
 
   // In production, require CRON_SECRET for authentication
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
@@ -43,7 +40,7 @@ export async function GET(request: Request) {
         error: "Cleanup failed",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

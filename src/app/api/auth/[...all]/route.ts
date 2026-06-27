@@ -10,7 +10,7 @@ const { GET: originalGET, POST: originalPOST } = toNextJsHandler(auth);
  */
 async function fixInvalidClientResponse(
   request: Request,
-  handler: (req: Request) => Promise<Response>
+  handler: (req: Request) => Promise<Response>,
 ): Promise<Response> {
   const response = await handler(request);
 

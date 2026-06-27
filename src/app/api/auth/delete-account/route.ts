@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { logError, logInfo } from "@/lib/logger";
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     if (origin && host && !origin.includes(host)) {
       return NextResponse.json(
         { error: "Forbidden", message: "Invalid origin" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -30,8 +30,11 @@ export async function POST(request: Request) {
     const contentType = request.headers.get("content-type");
     if (!contentType?.includes("application/json")) {
       return NextResponse.json(
-        { error: "Bad Request", message: "Content-Type must be application/json" },
-        { status: 400 }
+        {
+          error: "Bad Request",
+          message: "Content-Type must be application/json",
+        },
+        { status: 400 },
       );
     }
 
@@ -41,7 +44,7 @@ export async function POST(request: Request) {
     if (!email || typeof email !== "string") {
       return NextResponse.json(
         { error: "Bad Request", message: "Email is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -58,9 +61,12 @@ export async function POST(request: Request) {
     if (existingUser.length === 0) {
       // Don't reveal whether the email exists
       // Return success anyway to prevent email enumeration
-      logInfo("[DELETE ACCOUNT] Account deletion requested for non-existent email", {
-        email: normalizedEmail.slice(0, 3) + "***",
-      });
+      logInfo(
+        "[DELETE ACCOUNT] Account deletion requested for non-existent email",
+        {
+          email: `${normalizedEmail.slice(0, 3)}***`,
+        },
+      );
       return NextResponse.json({
         success: true,
         message: "If an account exists with this email, it has been deleted.",
@@ -74,18 +80,19 @@ export async function POST(request: Request) {
 
     logInfo("[DELETE ACCOUNT] Account deleted successfully", {
       userId: userToDelete.id,
-      email: normalizedEmail.slice(0, 3) + "***",
+      email: `${normalizedEmail.slice(0, 3)}***`,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Account deleted successfully. You can now create a new account.",
+      message:
+        "Account deleted successfully. You can now create a new account.",
     });
   } catch (error) {
     logError("[DELETE ACCOUNT] Error deleting account:", error);
     return NextResponse.json(
       { error: "Internal Server Error", message: "Failed to delete account" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

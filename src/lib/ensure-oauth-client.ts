@@ -47,7 +47,7 @@ export async function ensureOAuthClient(): Promise<void> {
       // Check if URIs need updating
       const needsUpdate =
         currentUris.length !== expectedUris.length ||
-        !expectedUris.every(uri => currentUris.includes(uri));
+        !expectedUris.every((uri) => currentUris.includes(uri));
 
       if (needsUpdate) {
         await db

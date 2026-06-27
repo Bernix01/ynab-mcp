@@ -168,7 +168,10 @@ export function registerTransactionTools(server: McpServer) {
       transaction_id: z.string().describe("The transaction ID to update"),
       account_id: z.string().optional().describe("New account ID"),
       date: z.string().optional().describe("New date (YYYY-MM-DD)"),
-      amount: z.number().optional().describe("New amount in currency units (e.g., 9.33 for $9.33)"),
+      amount: z
+        .number()
+        .optional()
+        .describe("New amount in currency units (e.g., 9.33 for $9.33)"),
       payee_name: z.string().optional().describe("New payee name"),
       category_id: z.string().optional().describe("New category ID"),
       memo: z.string().optional().describe("New memo"),

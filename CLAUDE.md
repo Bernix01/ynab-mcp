@@ -230,6 +230,9 @@ TOKEN_ENCRYPTION_KEY=
 ### Scheduled (Planned) Transactions
 - `ynab_list_scheduled_transactions` - List all scheduled (planned) transactions
 - `ynab_get_scheduled_transaction` - Get details for a scheduled transaction
+- `ynab_create_scheduled_transaction` - Create a new scheduled transaction
+- `ynab_update_scheduled_transaction` - Update existing scheduled transaction
+- `ynab_delete_scheduled_transaction` - Delete a scheduled transaction
 
 ### Category Management
 - `ynab_list_categories` - List all categories

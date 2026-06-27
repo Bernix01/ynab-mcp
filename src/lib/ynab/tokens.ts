@@ -51,7 +51,10 @@ export async function getYnabTokens(
     accessToken = await decryptToken(token.accessToken);
     refreshToken = await decryptToken(token.refreshToken);
   } catch (error) {
-    logError("[YNAB] Failed to decrypt tokens (key/salt may have changed), removing invalid tokens:", error);
+    logError(
+      "[YNAB] Failed to decrypt tokens (key/salt may have changed), removing invalid tokens:",
+      error,
+    );
     await db.delete(ynabToken).where(eq(ynabToken.userId, userId));
     return null;
   }
@@ -62,7 +65,7 @@ export async function getYnabTokens(
   );
   if (token.expiresAt < refreshThreshold) {
     const minutesUntilExpiry = Math.round(
-      (token.expiresAt.getTime() - Date.now()) / MS_PER_SECOND / 60
+      (token.expiresAt.getTime() - Date.now()) / MS_PER_SECOND / 60,
     );
     logInfo("[YNAB] Token needs refresh", {
       userId,
@@ -78,7 +81,10 @@ export async function getYnabTokens(
       logInfo("[YNAB] Token refreshed successfully", { userId });
       return newTokens;
     } catch (error) {
-      logError("[YNAB] Failed to refresh token, removing invalid tokens:", error);
+      logError(
+        "[YNAB] Failed to refresh token, removing invalid tokens:",
+        error,
+      );
       // Delete the invalid token - user will need to reauthorize
       await db.delete(ynabToken).where(eq(ynabToken.userId, userId));
       return null;

@@ -19,7 +19,10 @@ export default function ErrorBoundary({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-      <main id="main-content" className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg text-center">
+      <main
+        id="main-content"
+        className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg text-center"
+      >
         <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
           <svg
             aria-hidden="true"
@@ -80,14 +83,21 @@ export default function ErrorBoundary({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
             {showHelp ? "Hide troubleshooting tips" : "Need help?"}
           </button>
 
           {showHelp && (
             <div className="mt-4 text-left space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
-              <p className="font-medium text-zinc-900 dark:text-zinc-200">Common solutions:</p>
+              <p className="font-medium text-zinc-900 dark:text-zinc-200">
+                Common solutions:
+              </p>
               <ul className="space-y-2 list-disc list-inside">
                 <li>Refresh the page and try again</li>
                 <li>Clear your browser cookies and cache</li>
@@ -96,7 +106,8 @@ export default function ErrorBoundary({
                 <li>If connecting YNAB, ensure your YNAB account is active</li>
               </ul>
               <p className="text-xs text-zinc-500 dark:text-zinc-500 pt-2">
-                If the problem persists, please try again later or contact support with the Error ID above.
+                If the problem persists, please try again later or contact
+                support with the Error ID above.
               </p>
             </div>
           )}

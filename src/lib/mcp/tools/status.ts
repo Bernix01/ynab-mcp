@@ -33,23 +33,28 @@ export function registerStatusTools(server: McpServer) {
         const authUrl = `${env.BETTER_AUTH_URL}/api/ynab/authorize`;
         return jsonResponse({
           connected: false,
-          message: "YNAB account not connected or tokens expired and could not be refreshed.",
+          message:
+            "YNAB account not connected or tokens expired and could not be refreshed.",
           action_required: "User needs to authorize YNAB access",
           authorization_url: authUrl,
-          instructions: "Please visit the authorization URL to connect your YNAB account. After connecting, retry your YNAB request.",
+          instructions:
+            "Please visit the authorization URL to connect your YNAB account. After connecting, retry your YNAB request.",
         });
       }
 
       const now = new Date();
-      const expiresIn = Math.round((tokens.expiresAt.getTime() - now.getTime()) / 1000 / 60);
+      const expiresIn = Math.round(
+        (tokens.expiresAt.getTime() - now.getTime()) / 1000 / 60,
+      );
 
       return jsonResponse({
         connected: true,
         message: "YNAB account is connected and tokens are valid.",
         token_expires_in_minutes: expiresIn,
-        note: expiresIn < 30
-          ? "Token will be automatically refreshed when needed."
-          : "Connection is healthy.",
+        note:
+          expiresIn < 30
+            ? "Token will be automatically refreshed when needed."
+            : "Connection is healthy.",
       });
     },
   );

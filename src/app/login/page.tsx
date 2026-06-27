@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
 // Whitelist of allowed redirect paths to prevent open redirect attacks
@@ -18,13 +18,17 @@ const PASSWORD_REQUIREMENTS: PasswordRequirement[] = [
   { label: "At least 8 characters", test: (p) => p.length >= 8 },
   { label: "One uppercase letter", test: (p) => /[A-Z]/.test(p) },
   { label: "One number", test: (p) => /[0-9]/.test(p) },
-  { label: "One special character (!@#$%^&*)", test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+  {
+    label: "One special character (!@#$%^&*)",
+    test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
+  },
 ];
 
 function PasswordStrengthMeter({ password }: { password: string }) {
   const results = useMemo(
-    () => PASSWORD_REQUIREMENTS.map((req) => ({ ...req, met: req.test(password) })),
-    [password]
+    () =>
+      PASSWORD_REQUIREMENTS.map((req) => ({ ...req, met: req.test(password) })),
+    [password],
   );
 
   const strength = results.filter((r) => r.met).length;
@@ -125,7 +129,10 @@ function getSafeRedirectUrl(redirect: string | null): string {
 
   // Check against whitelist of allowed prefixes
   const isAllowed = ALLOWED_REDIRECT_PREFIXES.some(
-    (prefix) => redirect === prefix || redirect.startsWith(prefix + "/") || redirect.startsWith(prefix + "?")
+    (prefix) =>
+      redirect === prefix ||
+      redirect.startsWith(`${prefix}/`) ||
+      redirect.startsWith(`${prefix}?`),
   );
 
   return isAllowed ? redirect : "/";
@@ -137,7 +144,9 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
+  const [isSignUp, setIsSignUp] = useState(
+    searchParams.get("mode") === "signup",
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -257,7 +266,13 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete={isSignUp ? "new-password" : "current-password"}
-              aria-describedby={error ? "form-error" : isSignUp ? "password-requirements" : undefined}
+              aria-describedby={
+                error
+                  ? "form-error"
+                  : isSignUp
+                    ? "password-requirements"
+                    : undefined
+              }
               className="mt-1 block w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
               placeholder="••••••••"
             />

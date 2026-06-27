@@ -1,7 +1,7 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { betterAuth } from "better-auth";
-import { createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { jwt } from "better-auth/plugins";
 import { db } from "@/db";
 import { env } from "@/lib/env";
@@ -116,10 +116,7 @@ export const auth = betterAuth({
       refreshTokenExpiresIn: 30 * 24 * 60 * 60, // 30 days
       // Valid audiences for resource indicator validation (RFC 8707)
       // Include both with and without trailing slash to handle client variations
-      validAudiences: [
-        env.BETTER_AUTH_URL,
-        `${env.BETTER_AUTH_URL}/`,
-      ],
+      validAudiences: [env.BETTER_AUTH_URL, `${env.BETTER_AUTH_URL}/`],
     }),
   ],
   // Debug hooks for OAuth troubleshooting
@@ -131,7 +128,9 @@ export const auth = betterAuth({
           query: ctx.query,
           headers: {
             "content-type": ctx.headers?.get("content-type"),
-            authorization: ctx.headers?.get("authorization") ? "[REDACTED]" : undefined,
+            authorization: ctx.headers?.get("authorization")
+              ? "[REDACTED]"
+              : undefined,
           },
         });
       }
@@ -142,9 +141,10 @@ export const auth = betterAuth({
         logInfo(`[AUTH] After ${ctx.path}`, {
           returnedType: typeof returned,
           isError: returned instanceof Error,
-          returned: returned instanceof Error
-            ? { message: returned.message, name: returned.name }
-            : returned,
+          returned:
+            returned instanceof Error
+              ? { message: returned.message, name: returned.name }
+              : returned,
         });
       }
     }),

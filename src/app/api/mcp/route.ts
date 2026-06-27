@@ -1,21 +1,21 @@
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
-import { createRemoteJWKSet, jwtVerify, decodeJwt } from "jose";
-import { logError, logInfo } from "@/lib/logger";
 import { env } from "@/lib/env";
+import { logError, logInfo } from "@/lib/logger";
 import { registerAccountTools } from "@/lib/mcp/tools/accounts";
 import { registerBudgetTools } from "@/lib/mcp/tools/budgets";
 import { registerCategoryTools } from "@/lib/mcp/tools/categories";
 import { registerMonthTools } from "@/lib/mcp/tools/months";
-import { registerStatusTools } from "@/lib/mcp/tools/status";
 import { registerPayeeTools } from "@/lib/mcp/tools/payees";
 import { registerScheduledTransactionTools } from "@/lib/mcp/tools/scheduled-transactions";
+import { registerStatusTools } from "@/lib/mcp/tools/status";
 import { registerTargetTools } from "@/lib/mcp/tools/targets";
 import { registerTransactionTools } from "@/lib/mcp/tools/transactions";
 
 // Create JWKS client for JWT verification (cached)
 const JWKS = createRemoteJWKSet(
-  new URL(`${env.BETTER_AUTH_URL}/api/auth/jwks`)
+  new URL(`${env.BETTER_AUTH_URL}/api/auth/jwks`),
 );
 
 // MCP handler with tools
@@ -52,7 +52,10 @@ const verifyToken = async (
 ): Promise<AuthInfo | undefined> => {
   // Only log detailed JWT info in development to avoid leaking sensitive data
   if (!env.isProduction) {
-    logInfo("[MCP] verifyToken called", { hasToken: !!bearerToken, tokenPrefix: bearerToken?.slice(0, 20) });
+    logInfo("[MCP] verifyToken called", {
+      hasToken: !!bearerToken,
+      tokenPrefix: bearerToken?.slice(0, 20),
+    });
   }
 
   if (!bearerToken) return undefined;
@@ -88,20 +91,21 @@ const verifyToken = async (
       logInfo("[MCP] JWT verified", {
         sub: payload.sub,
         clientId: payload.clientId,
-        scope: payload.scope
+        scope: payload.scope,
       });
     }
 
     // Extract scopes from JWT payload
-    const scopes = typeof payload.scope === "string"
-      ? payload.scope.split(" ")
-      : Array.isArray(payload.scope)
-        ? payload.scope
-        : [];
+    const scopes =
+      typeof payload.scope === "string"
+        ? payload.scope.split(" ")
+        : Array.isArray(payload.scope)
+          ? payload.scope
+          : [];
 
     return {
       token: bearerToken,
-      clientId: payload.clientId as string || "unknown",
+      clientId: (payload.clientId as string) || "unknown",
       scopes,
       expiresAt: payload.exp,
       extra: {

@@ -28,12 +28,16 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
     // Build return URL with all OAuth params
     const returnParams = new URLSearchParams();
     if (params.client_id) returnParams.set("client_id", params.client_id);
-    if (params.redirect_uri) returnParams.set("redirect_uri", params.redirect_uri);
+    if (params.redirect_uri)
+      returnParams.set("redirect_uri", params.redirect_uri);
     if (params.scope) returnParams.set("scope", params.scope);
     if (params.state) returnParams.set("state", params.state);
-    if (params.response_type) returnParams.set("response_type", params.response_type);
-    if (params.code_challenge) returnParams.set("code_challenge", params.code_challenge);
-    if (params.code_challenge_method) returnParams.set("code_challenge_method", params.code_challenge_method);
+    if (params.response_type)
+      returnParams.set("response_type", params.response_type);
+    if (params.code_challenge)
+      returnParams.set("code_challenge", params.code_challenge);
+    if (params.code_challenge_method)
+      returnParams.set("code_challenge_method", params.code_challenge_method);
 
     const returnUrl = `/consent?${returnParams.toString()}`;
     redirect(`/login?redirect=${encodeURIComponent(returnUrl)}`);
@@ -48,12 +52,16 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
     // Build current URL for return after YNAB auth
     const currentParams = new URLSearchParams();
     if (params.client_id) currentParams.set("client_id", params.client_id);
-    if (params.redirect_uri) currentParams.set("redirect_uri", params.redirect_uri);
+    if (params.redirect_uri)
+      currentParams.set("redirect_uri", params.redirect_uri);
     if (params.scope) currentParams.set("scope", params.scope);
     if (params.state) currentParams.set("state", params.state);
-    if (params.response_type) currentParams.set("response_type", params.response_type);
-    if (params.code_challenge) currentParams.set("code_challenge", params.code_challenge);
-    if (params.code_challenge_method) currentParams.set("code_challenge_method", params.code_challenge_method);
+    if (params.response_type)
+      currentParams.set("response_type", params.response_type);
+    if (params.code_challenge)
+      currentParams.set("code_challenge", params.code_challenge);
+    if (params.code_challenge_method)
+      currentParams.set("code_challenge_method", params.code_challenge_method);
 
     const returnUrl = `/consent?${currentParams.toString()}`;
 
@@ -67,7 +75,10 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                role="img"
+                aria-label="Warning"
               >
+                <title>Warning</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -80,7 +91,8 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
               Connect YNAB First
             </h1>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              Before authorizing this application, you need to connect your YNAB account.
+              Before authorizing this application, you need to connect your YNAB
+              account.
             </p>
           </div>
 
@@ -99,7 +111,8 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
           </a>
 
           <p className="text-xs text-center text-zinc-500 dark:text-zinc-500">
-            You will be redirected to YNAB to authorize access, then returned here to complete the setup.
+            You will be redirected to YNAB to authorize access, then returned
+            here to complete the setup.
           </p>
         </div>
       </div>
